@@ -1,4 +1,4 @@
-# string.reverse()
+# string.reverse() or string[::-1]
 
 def reverseString(self, s: List[str]) -> None:
         """
