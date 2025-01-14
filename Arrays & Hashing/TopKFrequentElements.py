@@ -1,21 +1,39 @@
-# Hashmap for storing the element with its frequency, then we use bucketsort with the indices of the array being the frequencies, 
-# so the max frequency should be the size of the array, obviously you can sort normally instead and just get the top K keys in the hashmap
-# Time : O(n) 2n + k 
-# Space : O(n) hashmap: n, frequency: n, elements: k
-def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        count = {}
-        
-        for x in nums:
-            count[x]= 1 + count.get(x, 0)
-        
-        frequency = [[] for i in range(len(nums) + 1)] 
+import heapq
 
-        for key, v in count.items():
-            frequency[v].append(key)
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        counter = {}
+        result = []
+
+        for x in nums:
+            counter[x] = 1 + counter.get(x, 0)
         
-        elements = []
+        # Normal Sorting O(nlogn)
+        sorted_tuples = sorted(counter.items(), key= lambda tuple: tuple[1], reverse=True)
+        for x in range(k):
+            result.append(sorted_tuples[x][0])
+        result = []
+
+        # Bucket Sort O(n)
+        frequency = [[] for i in range(len(nums) + 1)]
+        for key, value in counter.items():
+            frequency[value].append(key)
         for i in range(len(frequency) - 1, 0, -1):
             for j in frequency[i]:
-                elements.append(j)
-                if len(elements) == k:
-                    return elements
+                result.append(j)
+                if len(result) == k:
+                    break
+            if len(result) == k:
+                break
+        result = []
+
+        # Heap O(nlogk) ~O(n)
+        heap = []
+        for x, freq in counter.items():
+            heapq.heappush(heap, (freq*-1, x)) # Negative numbers to simulate a max heap using the built-in min heap
+        print(heap)
+
+        for i in range(k):
+            result.append(heapq.heappop(heap)[1])
+
+        return result
